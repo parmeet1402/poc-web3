@@ -1,45 +1,59 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { useState } from "react";
+import { useQuery } from "react-query";
+import { ethers } from "ethers";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isFetching, setIsFetching] = useState(false);
+
+  const [account, setAccount] = useState("");
+  const connect = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const res = await provider.send("eth_requestAccounts", []);
+    setAccount(res[0]);
+  };
+
+  // fetch('https://api.opensea.io/api/v1/collections?asset_owner=dfdfd&offset=0&limit=300', options)
+
+  const { isLoading, data, isFetched, isSuccess } = useQuery(
+    "getMyNFTData",
+    async () => {
+      console.log({ account });
+      const response = await fetch(
+        `https://api.opensea.io/api/v1/collections?asset_owner=${account}&offset=0&limit=300`
+      );
+      return response.json();
+    },
+    { enabled: isFetching, cacheTime: 0 }
+  );
+  console.log({ data, isFetching });
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+      {account && <p>Account: {account}</p>}
+      {!account && <button onClick={connect}>Connect</button>}
+      {account && (
+        <button
+          onClick={() => {
+            setIsFetching(true);
+          }}
+        >
+          Get Data
+        </button>
+      )}
+      <br />
+      <br />
+      {isLoading && <p>Loading...</p>}
+      {isSuccess &&
+        (data.length > 0 ? (
+          <div>
+            <p>success</p>
+          </div>
+        ) : (
+          <span>You don't own any NFTs, Start Purchasing some!</span>
+        ))}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
