@@ -1,9 +1,11 @@
+// 3rd Party Packages
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { ChakraProvider } from "@chakra-ui/react";
-import "./index.css";
+
+// Components
+import App from "./App";
 
 const AppWrapper = () => {
   // Create a client
