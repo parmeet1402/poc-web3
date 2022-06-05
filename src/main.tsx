@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { QueryClientProvider, QueryClient } from "react-query";
+import { ChakraProvider } from "@chakra-ui/react";
 import "./index.css";
 
 const AppWrapper = () => {
@@ -10,7 +11,9 @@ const AppWrapper = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <App />
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
     </QueryClientProvider>
   );
 };
